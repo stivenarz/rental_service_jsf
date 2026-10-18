@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:jsf="jakarta.faces">
+
+<ui:composition template="/template/layout.xhtml">
+    <ui:param name="activePage" value="categorias"/>
+
+    <ui:define name="title">RS | Categorías</ui:define>
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewAction action="#{categoryController.init}"/>
+        </f:metadata>
+
+        <h:form id="formCategoria">
+            <div class="page-head">
+                <h2 class="page-title">Categorías</h2>
+                <h:commandButton value="Nueva categoría" action="#{categoryController.nuevo}"
+                                 styleClass="btn-filled btn-inline">
+                    <f:ajax execute="@this" render="@form :toasts"/>
+                </h:commandButton>
+            </div>
+
+            <div class="page-stack">
+                <section class="surface-card">
+                    <h3>Listado de categorías</h3>
+
+                    <div class="table-wrapper">
+                        <h:panelGroup rendered="#{empty categoryController.categories}" styleClass="empty-state">
+                            <h:outputText value="No hay categorías registradas."/>
+                        </h:panelGroup>
+
+                        <h:dataTable value="#{categoryController.categories}" var="c" rendered="#{not empty categoryController.categories}"
+                                     styleClass="data-table">
+                            <h:column>
+                                <f:facet name="header">Nombre</f:facet>
+                                #{c.name}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Descripción</f:facet>
+                                #{c.description}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Estado</f:facet>
+                                <span class="status-chip #{c.active ? 'chip-success' : 'chip-warning'}">
+                                    #{c.active ? 'Activa' : 'Inactiva'}
+                                </span>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Creada</f:facet>
+                                #{categoryController.formatearFecha(c.createdAt)}
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Acciones</f:facet>
+                                <div class="table-actions">
+                                    <h:commandButton value="Editar" action="#{categoryController.editar(c)}"
+                                                     styleClass="btn-outline btn-sm">
+                                        <f:ajax execute="@this" render="@form :toasts"/>
+                                    </h:commandButton>
+                                    <h:commandButton value="Eliminar" action="#{categoryController.solicitarEliminar(c)}"
+                                                     styleClass="btn-danger btn-sm">
+                                        <f:ajax execute="@this" render="@form :toasts"/>
+                                    </h:commandButton>
+                                </div>
+                            </h:column>
+                        </h:dataTable>
+                    </div>
+                </section>
+            </div>
+
+            <h:panelGroup layout="block" styleClass="modal-overlay" rendered="#{categoryController.modalAbierto}">
+                <div class="modal-card modal-card--form" role="dialog" aria-modal="true" aria-labelledby="modal-form-titulo">
+                    <h2 id="modal-form-titulo" class="modal-title">#{categoryController.titulo}</h2>
+
+                    <div class="form-group">
+                        <h:outputLabel for="nombre" value="Nombre *"/>
+                        <h:inputText id="nombre" value="#{categoryController.name}"
+                                     required="true" requiredMessage="El nombre es obligatorio."
+                                     maxlength="100" styleClass="text-field"/>
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel for="descripcion" value="Descripción"/>
+                        <h:inputTextarea id="descripcion" value="#{categoryController.description}"
+                                         maxlength="500" rows="3" styleClass="text-field"/>
+                    </div>
+
+                    <div class="checkbox-row" jsf:rendered="#{categoryController.editing}">
+                        <h:selectBooleanCheckbox id="activa" value="#{categoryController.active}"/>
+                        <h:outputLabel for="activa" value="Categoría activa"/>
+                    </div>
+
+                    <div class="modal-actions">
+                        <h:commandButton value="Cancelar" action="#{categoryController.cancelar}"
+                                         styleClass="btn-outline">
+                            <f:ajax execute="@this" render="@form :toasts"/>
+                        </h:commandButton>
+                        <h:commandButton value="Guardar" action="#{categoryController.guardar}"
+                                         styleClass="btn-filled btn-inline"/>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup layout="block" styleClass="modal-overlay" rendered="#{categoryController.confirmandoEliminar}">
+                <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-eliminar-titulo">
+                    <div class="modal-icon" aria-hidden="true">!</div>
+                    <h2 id="modal-eliminar-titulo" class="modal-title">¿Eliminar categoría?</h2>
+                    <p class="modal-text">
+                        Vas a eliminar «<strong>#{categoryController.nombreAEliminar}</strong>».
+                        Esta acción no se puede deshacer.
+                    </p>
+                    <div class="modal-actions">
+                        <h:commandButton value="Cancelar" action="#{categoryController.cancelarEliminar}"
+                                         styleClass="btn-outline">
+                            <f:ajax execute="@this" render="@form :toasts"/>
+                        </h:commandButton>
+                        <h:commandButton value="Sí, eliminar" action="#{categoryController.confirmarEliminar}"
+                                         styleClass="btn-danger">
+                            <f:ajax execute="@this" render="@form :toasts"/>
+                        </h:commandButton>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

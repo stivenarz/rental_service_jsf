@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html">
+
+<ui:composition template="/template/layout.xhtml">
+    <ui:param name="activePage" value="inicio"/>
+    <ui:param name="mainClass" value="cover-main"/>
+
+    <ui:define name="title">RS | Portada</ui:define>
+
+    <ui:define name="content">
+        <article class="surface-card cover-card">
+            <div class="cover-badge">
+                <span>🔧</span>
+                <span>Jakarta Faces</span>
+            </div>
+
+            <h2>JSF</h2>
+            <p class="institution">Servicio Nacional de Aprendizaje - SENA</p>
+
+            <hr class="cover-divider"/>
+
+            <h3><strong>Autor</strong></h3>
+            <ul class="authors-list">
+                <li>Stiven Ariza Rodríguez</li>
+            </ul>
+
+            <div class="cover-meta">
+                <span><strong>Programa:</strong> Tecnología en Análisis y Desarrollo de Software</span>
+                <span><strong>Ficha:</strong> 3336184</span>
+                <span><strong>Año:</strong> 2026</span>
+            </div>
+        </article>
+    </ui:define>
+</ui:composition>
+</html>

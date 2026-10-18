@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets">
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title><ui:insert name="title">Rental Service</ui:insert></title>
+    <h:outputStylesheet name="css/styles.css"/>
+    <h:outputStylesheet name="css/jsf.css"/>
+    <h:outputStylesheet name="css/toast.css"/>
+    <h:outputStylesheet name="css/modal.css"/>
+</h:head>
+
+<h:body>
+    <header class="site-header">
+        <div class="container site-header__inner">
+            <h1>Rental Service Marketplace</h1>
+            <nav class="main-nav" aria-label="Navegación principal">
+                <ul>
+                    <li>
+                        <h:link outcome="/index" value="Portada"
+                                styleClass="#{activePage == 'inicio' ? 'active' : ''}"/>
+                    </li>
+                    <li>
+                        <h:link outcome="/categorias/list" value="Categorías"
+                                styleClass="#{activePage == 'categorias' ? 'active' : ''}"/>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="#{empty mainClass ? 'page-main' : mainClass}">
+        <div class="container">
+            <ui:insert name="content">Contenido</ui:insert>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container site-footer__inner">
+            <p>&#169; 2026 Rental Service Marketplace. SENA - Análisis y Desarrollo de Software.</p>
+        </div>
+    </footer>
+
+    <h:panelGroup id="toasts" layout="block" styleClass="toast-stack">
+        <ui:repeat value="#{facesContext.messageList}" var="msg">
+            <div class="toast toast--#{msg.severity.ordinal == 0 ? 'success' : (msg.severity.ordinal == 1 ? 'warn' : 'error')}"
+                 role="#{msg.severity.ordinal == 2 ? 'alert' : 'status'}">
+                <span class="toast__icon" aria-hidden="true">#{msg.severity.ordinal == 0 ? '✓' : (msg.severity.ordinal == 1 ? '!' : '✕')}</span>
+                <div class="toast__body">
+                    <strong class="toast__title">#{msg.summary}</strong>
+                    <h:outputText value="#{msg.detail}" styleClass="toast__text"
+                                  rendered="#{msg.detail != msg.summary}"/>
+                </div>
+                <button type="button" class="toast__close" aria-label="Cerrar notificación">&#215;</button>
+                <span class="toast__progress" aria-hidden="true"></span>
+            </div>
+        </ui:repeat>
+    </h:panelGroup>
+
+    <script>
+    (function () {
+        var DURACION_MS = 5000;
+
+        function cerrar(toast) {
+            if (toast.classList.contains('is-leaving')) {
+                return;
+            }
+            toast.classList.add('is-leaving');
+            setTimeout(function () {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }
+
+        function activar(toast) {
+            if (toast.getAttribute('data-activo')) {
+                return;
+            }
+            toast.setAttribute('data-activo', 'true');
+            var temporizador = setTimeout(function () { cerrar(toast); }, DURACION_MS);
+            var boton = toast.querySelector('.toast__close');
+            if (boton) {
+                boton.addEventListener('click', function () {
+                    clearTimeout(temporizador);
+                    cerrar(toast);
+                });
+            }
+        }
+
+        function revisar() {
+            document.querySelectorAll('.toast:not([data-activo])').forEach(activar);
+        }
+
+        new MutationObserver(revisar).observe(document.body, { childList: true, subtree: true });
+        revisar();
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.classList) {
+                return;
+            }
+            if (e.target.classList.contains('modal-overlay')) {
+                var cancelar = e.target.querySelector('.btn-outline');
+                if (cancelar) {
+                    cancelar.click();
+                }
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                var cancelar = document.querySelector('.modal-overlay .btn-outline');
+                if (cancelar) {
+                    cancelar.click();
+                }
+            }
+        });
+    })();
+    </script>
+</h:body>
+</html>
